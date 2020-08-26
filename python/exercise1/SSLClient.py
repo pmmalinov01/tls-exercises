@@ -20,15 +20,19 @@ def main():
     #      https://github.com/mikepound/tls-exercises/blob/master/python/README.md
 
     # Create a standard TCP Socket
-    sock = None
+    sock = socket.socket()
 
     # Create SSL context which holds the parameters for any sessions
-    context = None
+    context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+    context.load_verify_locations(CA_CERT)
+    context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1 | ssl.OP_NO_SSLv3
+    context.set_ciphers('ALL:!DSS:!DHE:!aNULL:!eNull')
 
     # We can wrap in an SSL context first, then connect
-    conn = None
+    conn = context.wrap_socket(sock,server_hostname="Expert TLS Server")
     try:
         # Connect using conn
+        conn.connect(("localhost", 8282))
 
         # The code below is complete, it will use a connection to send and receive from the server
 
